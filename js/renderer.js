@@ -29,7 +29,7 @@ function render(source) {
 
             const inner = document.createElement("div");
             inner.className = "cell-inner";
-            inner.style.transform = `rotate(${cell.rotation * ROT_STEP}deg)`;
+            inner.style.transform = `rotate(${cell.actualRotation * ROT_STEP}deg)`;
 
             const svg = svgEl("svg");
             svg.setAttribute("viewBox", "0 0 100 100");
@@ -64,8 +64,12 @@ function render(source) {
 
                 evaluating = true;
                 const old = cell.rotation;
-                cell.rotation = (cell.rotation + 1) % ROT_COUNT;
-                cell.innerElement.style.transform = `rotate(${cell.rotation * ROT_STEP}deg)`;
+                
+                cell.rotation = (cell.rotation + 1) % ROT_COUNT; 
+                
+                cell.actualRotation = (cell.actualRotation || 0) + 1;
+                cell.innerElement.style.transform = `rotate(${cell.actualRotation * ROT_STEP}deg)`;
+                
                 window.addMove(cell.r, cell.c, old, cell.rotation);
 
                 setTimeout(() => {

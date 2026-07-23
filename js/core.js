@@ -191,17 +191,31 @@ function makeBoard(source) {
     }
 
     const extra = EXTRA[s <= 6 ? s - 3 : 4] || 7;
-    for (let i = 0; i < extra; i++) {
+    let added = 0;
+    let attempts = 0;
+    
+    while (added < extra && attempts < 20) {
+        attempts++;
         const r = Math.floor(Math.random() * (s - 1));
         const c = Math.floor(Math.random() * (s - 1));
-        Math.random() < 0.5 ? connect(r, c, r + 1, c) : connect(r, c, r, c + 1);
+        if (Math.random() < 0.5) {
+            if (!solved[r][c][DIR.S]) {
+                connect(r, c, r + 1, c);
+                added++;
+            }
+        } else {
+            if (!solved[r][c][DIR.E]) {
+                connect(r, c, r, c + 1);
+                added++;
+            }
+        }
     }
     return solved;
 }
 
 function buildBoard(source) {
     if (!source) source = { r: 0, c: 0 };
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 30; i++) {
         const board = makeBoard(source);
         if (solvable(board)) return board;
     }
@@ -252,10 +266,12 @@ function shuffle(board, source) {
             let mask = board[r][c];
             if (mask.join("") === "0000") mask = [1, 0, 0, 0];
             const isSource = source && source.r === r && source.c === c;
+            const rot = isSource ? sourceRot(mask) : (needsRotate() ? randomRot() : 0); 
             result[r][c] = {
                 r, c,
                 type: shapeOf(mask),
-                rotation: isSource ? sourceRot(mask) : (needsRotate() ? randomRot() : 0),
+                rotation: rot,
+                actualRotation: rot,
                 powered: false,
                 locked: false,
                 isSource: isSource

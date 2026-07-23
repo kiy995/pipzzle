@@ -20,8 +20,11 @@ function undo() {
         history.push(last);
         return;
     }
+    
     cell.rotation = last.oldRotation;
-    cell.innerElement.style.transform = `rotate(${cell.rotation * 90}deg)`;
+    cell.actualRotation = (cell.actualRotation || 0) - 1; 
+    cell.innerElement.style.transform = `rotate(${cell.actualRotation * 90}deg)`;
+    
     setTimeout(() => check(), 50);
 }
 
